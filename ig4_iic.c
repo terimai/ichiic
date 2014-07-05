@@ -58,7 +58,6 @@
 
 #include "ig4_reg.h"
 #include "ig4_var.h"
-#include "smbtrans.h"
 
 #define TRANS_NORMAL	1
 #define TRANS_PCALL	2

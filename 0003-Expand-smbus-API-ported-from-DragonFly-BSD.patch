@@ -1,0 +1,85 @@
+From f8c7280144630196fb390384a8fb0693344f6ca9 Mon Sep 17 00:00:00 2001
+From: Teruyuki Imai <teruyuki.imai@gmail.com>
+Date: Sun, 6 Jul 2014 01:13:42 +0900
+Subject: [PATCH 3/3] Expand smbus API, ported from DragonFly BSD.
+
+Port from the commit d316587fb7e2095feadd275045648efba8e09370 of DragonFly.
+* Expand the SMBUS API to add a smbus_trans() function.  This function
+  wraps up all the other functions into one convenient call and is
+  also capable of doing I2C pass-through and chaining when given the
+  appropriate flags.
+---
+ sys/dev/smbus/smbconf.h  | 23 +++++++++++++++++++++++
+ sys/dev/smbus/smbus_if.m | 18 ++++++++++++++++++
+ 2 files changed, 41 insertions(+)
+
+diff --git a/sys/dev/smbus/smbconf.h b/sys/dev/smbus/smbconf.h
+index a3d403d..fa7373a 100644
+--- a/sys/dev/smbus/smbconf.h
++++ b/sys/dev/smbus/smbconf.h
+@@ -68,6 +68,25 @@
+ #define SMB_QREAD	0x1
+ 
+ /*
++ * smbus transction op with pass-thru capabilities
++ *
++ * This smbus function is capable of doing a smbus command transaction
++ * (read or write), and can be flagged to not issue the 'cmd' and/or
++ * issue or expect a count field as well as flagged for chaining (no STOP),
++ * which gives it an i2c pass-through capability.
++ *
++ * NOSTOP- Caller chaining transactions, do not issue STOP
++ * NOCMD-  Do not transmit the command field
++ * NOCNT-  Do not transmit (wr) or expect (rd) the count field
++ */
++
++#define SMB_TRANS_NOSTOP	0x0001  /* do not send STOP at end */
++#define SMB_TRANS_NOCMD		0x0002  /* ignore cmd field (do not tx) */
++#define SMB_TRANS_NOCNT		0x0004  /* do not tx or rx count field */
++#define SMB_TRANS_7BIT		0x0008  /* change address mode to 7-bit */
++#define SMB_TRANS_10BIT		0x0010  /* change address mode to 10-bit */
++
++/*
+  * ivars codes
+  */
+ #define SMBUS_IVAR_ADDR	0x1	/* slave address of the device */
+@@ -104,6 +123,10 @@ extern devclass_t smbus_devclass;
+ 	(SMBUS_BWRITE(device_get_parent(bus), slave, cmd, count, buf))
+ #define smbus_bread(bus,slave,cmd,count,buf) \
+ 	(SMBUS_BREAD(device_get_parent(bus), slave, cmd, count, buf))
++#define smbus_trans(bus,slave,cmd,op,wbuf,wcount,rbuf,rcount,actualp) \
++	(SMBUS_TRANS(device_get_parent(bus), slave, cmd, op,          \
++		     wbuf, wcount, rbuf, rcount, actualp))
++
+ 
+ #define SMBUS_MODVER	1
+ #define SMBUS_MINVER	1
+diff --git a/sys/dev/smbus/smbus_if.m b/sys/dev/smbus/smbus_if.m
+index d969e25..314e98c 100644
+--- a/sys/dev/smbus/smbus_if.m
++++ b/sys/dev/smbus/smbus_if.m
+@@ -149,3 +149,21 @@ METHOD int bread {
+ 	u_char *count;
+ 	char *buf;
+ };
++
++#
++# SMB roll-up transaction with flags that also allow it to be
++# used for (mostly) i2c pass-through and with 10-bit addresses.
++# This function can be used to roll-up all of the above functions.
++#
++METHOD int trans {
++	device_t dev;
++	int     slave;
++	char    cmd;
++	int     op;
++	char    *wbuf;
++	int     wcount;
++	char    *rbuf;
++	int     rcount;
++	int     *actualp;
++}
++
+-- 
+2.0.0
+
