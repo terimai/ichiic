@@ -69,7 +69,8 @@ struct ig4iic_softc {
 	int		slave_valid : 1;
 	int		read_started : 1;
 	int		write_started : 1;
-	struct sx	sx;
+	struct sx	sx;/* serialize transactions */
+	struct mtx	mtx;/* protect members */
 };
 
 typedef struct ig4iic_softc ig4iic_softc_t;
