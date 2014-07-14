@@ -830,9 +830,8 @@ ig4iic_smb_bread(device_t dev, u_char slave, char cmd,
 	mtx_unlock(&sc->mtx);
 	return error;
 }
-#if 0 /* smb_trans */
 int
-ig4iic_smb_trans(device_t dev, int slave, char cmd, int op,
+ig4iic_smb_trans(device_t dev, u_char slave, char cmd, int op,
 		 char *wbuf, int wcount, char *rbuf, int rcount,
 		 int *actualp)
 {
@@ -848,7 +847,6 @@ ig4iic_smb_trans(device_t dev, int slave, char cmd, int op,
 	mtx_unlock(&sc->mtx);
 	return error;
 }
-#endif /* 0 smb_trans */
 
 /*
  * Interrupt Operation

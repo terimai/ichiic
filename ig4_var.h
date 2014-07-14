@@ -90,6 +90,6 @@ extern smbus_readw_t    ig4iic_smb_readw;
 extern smbus_pcall_t    ig4iic_smb_pcall;
 extern smbus_bwrite_t   ig4iic_smb_bwrite;
 extern smbus_bread_t    ig4iic_smb_bread;
-/*extern smbus_trans_t    ig4iic_smb_trans;*/
+extern smbus_trans_t    ig4iic_smb_trans;
 
 #endif

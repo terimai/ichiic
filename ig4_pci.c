@@ -181,7 +181,7 @@ static device_method_t ig4iic_pci_methods[] = {
 	DEVMETHOD(smbus_pcall, ig4iic_smb_pcall),
 	DEVMETHOD(smbus_bwrite, ig4iic_smb_bwrite),
 	DEVMETHOD(smbus_bread, ig4iic_smb_bread),
-/*	DEVMETHOD(smbus_trans, ig4iic_smb_trans),*/
+	DEVMETHOD(smbus_trans, ig4iic_smb_trans),
 	DEVMETHOD_END
 };
 
