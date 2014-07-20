@@ -110,7 +110,7 @@ set_controller(ig4iic_softc_t *sc, uint32_t ctl)
 			error = 0;
 			break;
 		}
-		tsleep(sc, 0, "i2cslv", 1);
+		mtx_sleep(sc, &sc->mtx, 0, "i2cslv", 1);
 	}
 	return error;
 }
