@@ -43,7 +43,7 @@
 #include <sys/module.h>
 #include <sys/errno.h>
 #include <sys/lock.h>
-#include <sys/sx.h>
+#include <sys/mutex.h>
 #include <sys/syslog.h>
 #include <sys/bus.h>
 
@@ -91,7 +91,7 @@ ig4iic_pci_attach(device_t dev)
 
 	bzero(sc, sizeof(*sc));
 
-	sx_init_flags(&sc->sx, "ig4iic", SX_RECURSE);
+	mtx_init(&sc->mtx, "ig4iic", NULL, MTX_RECURSE);
 
 	sc->dev = dev;
 	sc->regs_rid = PCIR_BAR(0);
@@ -155,7 +155,7 @@ ig4iic_pci_detach(device_t dev)
 	}
 	sc->regs_t = 0;
 	sc->regs_h = 0;
-	sx_destroy(&sc->sx);
+	mtx_destroy(&sc->mtx);
 
 	return 0;
 }
