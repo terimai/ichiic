@@ -1,4 +1,4 @@
-From f8c7280144630196fb390384a8fb0693344f6ca9 Mon Sep 17 00:00:00 2001
+From df6849200e05c0ea73a46a8ed7124df3f9a8b652 Mon Sep 17 00:00:00 2001
 From: Teruyuki Imai <teruyuki.imai@gmail.com>
 Date: Sun, 6 Jul 2014 01:13:42 +0900
 Subject: [PATCH 3/3] Expand smbus API, ported from DragonFly BSD.
@@ -55,7 +55,7 @@ index a3d403d..fa7373a 100644
  #define SMBUS_MODVER	1
  #define SMBUS_MINVER	1
 diff --git a/sys/dev/smbus/smbus_if.m b/sys/dev/smbus/smbus_if.m
-index d969e25..314e98c 100644
+index d969e25..39c2515 100644
 --- a/sys/dev/smbus/smbus_if.m
 +++ b/sys/dev/smbus/smbus_if.m
 @@ -149,3 +149,21 @@ METHOD int bread {
@@ -70,16 +70,16 @@ index d969e25..314e98c 100644
 +#
 +METHOD int trans {
 +	device_t dev;
-+	int     slave;
-+	char    cmd;
-+	int     op;
-+	char    *wbuf;
-+	int     wcount;
-+	char    *rbuf;
-+	int     rcount;
-+	int     *actualp;
-+}
++	u_char slave;
++	char cmd;
++	int op;
++	char *wbuf;
++	int wcount;
++	char *rbuf;
++	int rcount;
++	int *actualp;
++};
 +
 -- 
-2.0.0
+2.1.0
 
