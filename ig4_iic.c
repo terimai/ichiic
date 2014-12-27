@@ -442,7 +442,6 @@ ig4iic_attach(ig4iic_softc_t *sc)
 	int error;
 	uint32_t v;
 
-	mtx_lock(&sc->mtx);
 
 	v = reg_read(sc, IG4_REG_COMP_TYPE);
 	printf("type %08x\n", v);
@@ -496,6 +495,7 @@ ig4iic_attach(ig4iic_softc_t *sc)
 		  IG4_CTL_RESTARTEN |
 		  IG4_CTL_SPEED_STD);
 
+	mtx_lock(&sc->mtx);
 	sc->smb = device_add_child(sc->dev, "smbus", -1);
 	if (sc->smb == NULL) {
 		device_printf(sc->dev, "smbus driver not found\n");
@@ -520,6 +520,7 @@ ig4iic_attach(ig4iic_softc_t *sc)
 		device_printf(sc->dev, "controller error during attach-1\n");
 	if (set_controller(sc, IG4_I2C_ENABLE))
 		device_printf(sc->dev, "controller error during attach-2\n");
+	mtx_unlock(&sc->mtx);
 	error = bus_setup_intr(sc->dev, sc->intr_res,
 			       INTR_TYPE_MISC | INTR_MPSAFE, NULL,
 			       ig4iic_intr, sc, &sc->intr_handle);
@@ -530,7 +531,6 @@ ig4iic_attach(ig4iic_softc_t *sc)
 	}
 
 	/* Attach us to the smbus */
-	mtx_unlock(&sc->mtx);
 	error = bus_generic_attach(sc->dev);
 	mtx_lock(&sc->mtx);
 	if (error) {
